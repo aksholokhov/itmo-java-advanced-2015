@@ -27,5 +27,8 @@ public class Main {
 
         ArrayList<Integer> t2 = new ArrayList<Integer>();
         test = new ArraySet<Integer>(t);
+
+        final ArraySet<Integer> set = new ArraySet<Integer>(new Object[]{});
+
     }
 }

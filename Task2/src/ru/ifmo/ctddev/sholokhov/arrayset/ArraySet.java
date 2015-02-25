@@ -76,12 +76,20 @@ public class ArraySet<T> extends AbstractSet<T> implements SortedSet<T> {
 
     @Override
     public SortedSet<T> headSet(T toElement) {
-        return new ArraySet<T>(data.subList(0, Collections.binarySearch(data, toElement, comparator)), comparator);
+        int index = Collections.binarySearch(data, toElement, comparator);
+        if (index>0) {
+            return new ArraySet<T>(data.subList(0, index), comparator);
+        }
+        else return new ArraySet<T>(new ArrayList<T>(), comparator);
     }
 
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        return new ArraySet<T>(data.subList(Collections.binarySearch(data, fromElement, comparator), data.size()), comparator);
+        int index = Collections.binarySearch(data, fromElement, comparator);
+        if (index>0) {
+            return new ArraySet<T>(data.subList(index, data.size()), comparator);
+        }
+        else return new ArraySet<T>(new ArrayList<T>(), comparator);
     }
 
     @Override
@@ -103,6 +111,12 @@ public class ArraySet<T> extends AbstractSet<T> implements SortedSet<T> {
     public boolean remove(Object o) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isEmpty() {if (size() == 0) return true; else return false;}
+
+    @Override
+    public Object[] toArray() {return data.toArray();}
 
     @Override
     public void clear() {
