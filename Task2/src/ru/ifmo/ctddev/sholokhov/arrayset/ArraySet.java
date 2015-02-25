@@ -7,8 +7,9 @@ import java.util.*;
  */
 public class ArraySet<T> extends AbstractSet<T> implements SortedSet<T> {
 
-    private ArrayList<T> data;
-    private Comparator<? super T> comparator;
+    private List<T> data;
+    private Comparator<? super T> comparator = null;
+    private boolean hasComparator = true;
 
     private class MyComparator<T> implements Comparator<T> {
         @Override
@@ -40,17 +41,39 @@ public class ArraySet<T> extends AbstractSet<T> implements SortedSet<T> {
         }
     }
 
+    private void unify(ArrayList<T> data2) {
+        int i = 1;
+        while (i < data2.size()) {
+            if (comparator.compare(data2.get(i-1), data2.get(i)) == 0) {
+                data2.remove(i);
+            } else i++;
+        }
+    }
+
+    public ArraySet() {
+        this.data = new ArrayList<>();
+        this.comparator = null;
+    }
+
     public ArraySet(Collection<T> data) {
         ArrayList<T> data2 = new ArrayList<T>(data);
-        Collections.sort(data2, new MyComparator());
-        this.data = new ArrayList<T>(data);
-        this.comparator = new MyComparator<T>();
+        comparator = new MyComparator<>();
+        Collections.sort(data2, comparator);
+        unify(data2);
+        this.data = new ArrayList<T>(data2);
+        hasComparator = false;
     }
 
     public ArraySet(Collection<T> data, Comparator<? super T> comparator) {
         ArrayList<T> data2 = new ArrayList<T>(data);
         Collections.sort(data2, comparator);
+        this.comparator = comparator;
+        unify(data2);
         this.data = new ArrayList<T>(data2);
+    }
+
+    private ArraySet(List<T> data, Comparator<? super T> comparator, boolean sorted) {
+        this.data = data;
         this.comparator = comparator;
     }
 
@@ -66,40 +89,57 @@ public class ArraySet<T> extends AbstractSet<T> implements SortedSet<T> {
 
     @Override
     public Comparator<? super T> comparator() {
-        return comparator;
+        return hasComparator ? comparator : null;
     }
 
     @Override
     public SortedSet<T> subSet(T fromElement, T toElement) {
-        return new ArraySet<T>(data.subList(Collections.binarySearch(data, fromElement, comparator), Collections.binarySearch(data, toElement, comparator)), comparator);
+        int fromIndex = Collections.binarySearch(data, fromElement, comparator);
+        int toIndex = Collections.binarySearch(data, toElement, comparator);
+        return subSetBounds(fromIndex, true, toIndex, false);
+    }
+
+    private SortedSet<T> subSetBounds(int fromIndex, boolean lincl, int toIndex, boolean rincl) {
+        if (fromIndex < 0) {
+            fromIndex = -(fromIndex+1);
+        }
+        if (toIndex < 0) {
+            toIndex = -(toIndex+1);
+        }
+        if (((fromIndex == toIndex) && !(lincl && rincl)) || (fromIndex > toIndex) || (fromIndex >= data.size())) return new ArraySet<T>();
+        return new ArraySet<T>(data.subList(lincl ? fromIndex : fromIndex+1, rincl ? toIndex+1 : toIndex), comparator, true);
     }
 
     @Override
     public SortedSet<T> headSet(T toElement) {
-        int index = Collections.binarySearch(data, toElement, comparator);
-        if (index>0) {
-            return new ArraySet<T>(data.subList(0, index), comparator);
+        if (toElement == null) {
+            throw new NullPointerException();
         }
-        else return new ArraySet<T>(new ArrayList<T>(), comparator);
+        int toIndex = Collections.binarySearch(data, toElement, comparator);
+        return subSetBounds(0, true, toIndex, false);
     }
 
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        int index = Collections.binarySearch(data, fromElement, comparator);
-        if (index>0) {
-            return new ArraySet<T>(data.subList(index, data.size()), comparator);
+        if (fromElement == null) {
+            throw new NullPointerException();
         }
-        else return new ArraySet<T>(new ArrayList<T>(), comparator);
+        int fromIndex = Collections.binarySearch(data, fromElement, comparator);
+        return subSetBounds(fromIndex, true, data.size()-1, true);
     }
 
     @Override
     public T first() {
-        return data.get(0);
+        if (data.isEmpty()) {
+            throw new NoSuchElementException();
+        } else return data.get(0);
     }
 
     @Override
     public T last() {
-        return data.get(data.size() - 1);
+        if (data.isEmpty()) {
+            throw new NoSuchElementException();
+        } else return data.get(data.size() - 1);
     }
 
     @Override
@@ -121,5 +161,12 @@ public class ArraySet<T> extends AbstractSet<T> implements SortedSet<T> {
     @Override
     public void clear() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+
+        int fromIndex = Collections.binarySearch(data, (T)o, comparator);
+        return fromIndex >= 0 ? true : false;
     }
 }
