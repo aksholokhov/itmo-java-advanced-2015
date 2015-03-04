@@ -5,6 +5,6 @@ package ru.ifmo.ctddev.sholokhov.implementor;
  */
 public class Main {
     public static void main (String[] args) {
-        Implementor i = new Implementor("java.util.NavigableSet");
+
     }
 }

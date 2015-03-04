@@ -1,5 +1,8 @@
 package ru.ifmo.ctddev.sholokhov.implementor;
 
+import info.kgeorgiy.java.advanced.implementor.Impler;
+import info.kgeorgiy.java.advanced.implementor.ImplerException;
+
 import javax.management.modelmbean.ModelMBean;
 import java.io.*;
 import java.lang.reflect.*;
@@ -7,19 +10,33 @@ import java.lang.reflect.*;
 /**
  * Created by Шолохов on 03.03.2015.
  */
-public class Implementor {
-    Implementor(String s) {
+public class Implementor implements Impler {
+    @Override
+    public void implement(Class<?> token, File root) throws ImplerException {
+        if (token.isPrimitive()) {
+            throw new ImplerException("Class is primitive");
+        }
+
+        if (Modifier.isFinal(token.getModifiers())) {
+            throw new ImplerException("Class is final");
+        }
+
         try {
-            Class c = Class.forName(s);
+
+            Class c = token;
             if (c.isInterface()) {
-                String className = c.getSimpleName() + "Impl";
-                String fileName = className + ".java";
                 BufferedWriter out = null;
 
 
+                File outputFile = new File(root, token.getCanonicalName().replace(".", File.separator) + "Impl.java");
+                outputFile.getParentFile().mkdirs();
+
+
                 try {
-                    out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
-                    out.write("public class " + className + " implements " + c.getCanonicalName()+ " {" + '\n');
+                    out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"));
+                    out.write("package " + c.getPackage().getName() + ";" + '\n');
+
+                    out.write("public class " + token.getSimpleName() + "Impl" + " implements " + c.getCanonicalName()+ " {" + '\n');
 
                     Method[] methods = c.getMethods();
 
@@ -72,7 +89,7 @@ public class Implementor {
                 }
 
             }
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             System.out.println("CNF fail");
         }
     }
