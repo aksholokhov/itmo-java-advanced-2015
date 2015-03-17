@@ -140,7 +140,7 @@ public class Implementor implements JarImpler {
     }
 
 
-    private boolean generateJar;
+    public boolean generateJar;
 
     /**
      * Produces <tt>.jar</tt> file implementing class or interface specified by provided <tt>token</tt>.
