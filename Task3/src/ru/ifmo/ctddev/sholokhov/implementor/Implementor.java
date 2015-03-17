@@ -70,7 +70,8 @@ public class Implementor implements Impler {
                         if (!returnType.equals(void.class)) {
                             out.write(" return");
                             if (returnType.equals(int.class) || returnType.equals(float.class) || returnType.equals(double.class) ||
-                                    returnType.equals(short.class) || returnType.equals(char.class)) {
+                                    returnType.equals(short.class) || returnType.equals(char.class) || returnType.equals(long.class) ||
+                                    returnType.equals(byte.class)) {
                                 out.write(" 0;");
                             } else if (returnType.equals(boolean.class)) {
                                 out.write(" false;");
@@ -90,7 +91,7 @@ public class Implementor implements Impler {
 
             }
         } catch (Exception e) {
-            System.out.println("CNF fail");
+            System.out.println("Exception");
         }
     }
 }

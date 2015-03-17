@@ -1,0 +1,152 @@
+public class NavigableSetImpl implements java.util.NavigableSet {
+java.util.Iterator iterator () {
+ return null;
+}
+
+java.lang.Object floor (java.lang.Object arg0, ) {
+ return null;
+}
+
+java.util.Iterator descendingIterator () {
+ return null;
+}
+
+java.lang.Object pollFirst () {
+ return null;
+}
+
+java.lang.Object pollLast () {
+ return null;
+}
+
+java.lang.Object ceiling (java.lang.Object arg0, ) {
+ return null;
+}
+
+java.util.NavigableSet descendingSet () {
+ return null;
+}
+
+java.util.NavigableSet headSet (java.lang.Object arg0, boolean arg1, ) {
+ return null;
+}
+
+java.util.SortedSet headSet (java.lang.Object arg0, ) {
+ return null;
+}
+
+java.lang.Object higher (java.lang.Object arg0, ) {
+ return null;
+}
+
+java.lang.Object lower (java.lang.Object arg0, ) {
+ return null;
+}
+
+java.util.SortedSet subSet (java.lang.Object arg0, java.lang.Object arg1, ) {
+ return null;
+}
+
+java.util.NavigableSet subSet (java.lang.Object arg0, boolean arg1, java.lang.Object arg2, boolean arg3, ) {
+ return null;
+}
+
+java.util.NavigableSet tailSet (java.lang.Object arg0, boolean arg1, ) {
+ return null;
+}
+
+java.util.SortedSet tailSet (java.lang.Object arg0, ) {
+ return null;
+}
+
+java.util.Spliterator spliterator () {
+ return null;
+}
+
+java.lang.Object first () {
+ return null;
+}
+
+java.lang.Object last () {
+ return null;
+}
+
+java.util.Comparator comparator () {
+ return null;
+}
+
+boolean add (java.lang.Object arg0, ) {
+ return null;
+}
+
+boolean remove (java.lang.Object arg0, ) {
+ return null;
+}
+
+boolean equals (java.lang.Object arg0, ) {
+ return null;
+}
+
+int hashCode () {
+ return 0;
+}
+
+void clear () {
+
+}
+
+boolean contains (java.lang.Object arg0, ) {
+ return null;
+}
+
+boolean isEmpty () {
+ return null;
+}
+
+int size () {
+ return 0;
+}
+
+[Ljava.lang.Object; toArray () {
+ return null;
+}
+
+[Ljava.lang.Object; toArray ([Ljava.lang.Object; arg0, ) {
+ return null;
+}
+
+boolean addAll (java.util.Collection arg0, ) {
+ return null;
+}
+
+boolean containsAll (java.util.Collection arg0, ) {
+ return null;
+}
+
+boolean removeAll (java.util.Collection arg0, ) {
+ return null;
+}
+
+boolean retainAll (java.util.Collection arg0, ) {
+ return null;
+}
+
+java.util.stream.Stream stream () {
+ return null;
+}
+
+boolean removeIf (java.util.function.Predicate arg0, ) {
+ return null;
+}
+
+java.util.stream.Stream parallelStream () {
+ return null;
+}
+
+void forEach (java.util.function.Consumer arg0, ) {
+
+}
+
+
+}
+
