@@ -18,13 +18,13 @@ public class Any<T> implements Worker<Boolean> {
 
     @Override
     public void run() {
+        result = false;
         for (T elem : list) {
             if (predicate.test(elem)) {
                 result = true;
                 break;
             }
         }
-        result = false;
     }
 
     @Override
