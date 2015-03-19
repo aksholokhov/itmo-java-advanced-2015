@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 /**
  * Created by Шолохов on 18.03.2015.
  */
-public class Any<T> implements Worker<Boolean> {
+public class Any<T> implements threadProcessor<Boolean> {
     private List<? extends T> list;
     private Predicate<? super T> predicate;
     private boolean result;
@@ -28,14 +28,14 @@ public class Any<T> implements Worker<Boolean> {
     }
 
     @Override
-    public Boolean getResult() {
+    public Boolean getCalculatedRes() {
         return result;
     }
 
     @Override
-    public Boolean doYourWork(List<? extends Boolean> work) {
-        Worker<Boolean> worker = new Any<>(work, Predicate.isEqual(true));
-        worker.run();
-        return worker.getResult();
+    public Boolean merge(List<? extends Boolean> work) {
+        threadProcessor<Boolean> threadProcessor = new Any<>(work, Predicate.isEqual(true));
+        threadProcessor.run();
+        return threadProcessor.getCalculatedRes();
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Шолохов on 18.03.2015.
  */
-public class Min<T> implements Worker<T> {
+public class Min<T> implements threadProcessor<T> {
     private List<? extends T> work;
     private Comparator<? super T> comparator;
     private T result;
@@ -17,15 +17,15 @@ public class Min<T> implements Worker<T> {
     }
 
     @Override
-    public T getResult() {
+    public T getCalculatedRes() {
         return result;
     }
 
     @Override
-    public T doYourWork(List<? extends T> work) {
-        Worker<T> worker = new Min<T>(work, comparator);
-        worker.run();
-        return worker.getResult();
+    public T merge(List<? extends T> work) {
+        threadProcessor<T> threadProcessor = new Min<T>(work, comparator);
+        threadProcessor.run();
+        return threadProcessor.getCalculatedRes();
     }
 
     @Override
