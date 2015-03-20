@@ -10,36 +10,70 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Created by Шолохов on 18.03.2015.
+ * Amazing class which realises most popular FP functions
+ * @author Alexey Sholokhov
+ *
+ * @see info.kgeorgiy.java.advanced.concurrent.ScalarIP
  */
 public class IterativeParallelism implements ScalarIP {
 
     /**
-     * Returns maximal element of the given list according to the given comparator
+     * Finds maximal element of the given list according to the given comparator
      *
-     * @param threads is threads count
-     * @param values is the 
-     * @param comparator
-     * @param <T>
-     * @return
+     * @param threads quantity of threads
+     * @param values list with data for processing
+     * @param comparator comparator for comparing {@code values} elements
+     * @param <T> result type, should be the same with the {@code values} elements type
+     * @return the maximum in the {@code values} according to the {@code comparator}
      * @throws InterruptedException
      */
-
     @Override
     public <T> T maximum(int threads, List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
         return runInThreads(threads, values, work -> new Max<T>(work, comparator));
     }
 
+    /**
+     * Finds minimal element of the given list according to the given comparator
+     *
+     * @param threads quantity of threads
+     * @param values list with data for processing
+     * @param comparator comparator for comparing {@code values} elements
+     * @param <T> result type, should be the same with the {@code values} elements type
+     * @return the minimum in the {@code values} according to the {@code comparator}
+     * @throws InterruptedException
+     */
     @Override
     public <T> T minimum(int threads, List<? extends T> values, Comparator<? super T> comparator) throws InterruptedException {
         return runInThreads(threads, values, work -> new Min<T>(work, comparator));
     }
+
+    /**
+     * Determines whether all elements of the {@code list} satisfy {@predicate} or not
+     *
+     * @param threads quantity of threads
+     * @param values list with data for processing
+     * @param predicate comparator for comparing {@code values} elements
+     * @param <T> result type, should be the same with the {@code values} elements type
+     * @return true if all elements satisfy predicate, false otherwise
+     * @throws InterruptedException
+     */
 
     @Override
     public <T> boolean all(int threads, List<? extends T> values, Predicate<? super T> predicate) throws InterruptedException {
         return runInThreads(threads, values, work -> new All<T>(work, predicate));
     }
 
+
+    /**
+     * Determines whether at least one element of the {@code list} satisfies {@predicate} or not
+     *
+     * @param threads quantity of threads
+     * @param values list with data for processing
+     * @param predicate comparator for comparing {@code values} elements
+     * @param <T> result type, should be the same with the {@code values} elements type
+     * @return true if all elements satisfy predicate, false otherwise
+     * @throws InterruptedException
+     */
     @Override
     public <T> boolean any(int threads, List<? extends T> values, Predicate<? super T> predicate) throws InterruptedException {
         return runInThreads(threads, values, work -> new Any<T>(work, predicate));

@@ -1,7 +1,7 @@
 package ru.ifmo.ctddev.sholokhov.iterativeparallelism;
 
 /**
- * Created by Шолохов on 18.03.2015.
+ * Main class of the package. It's empty.
  */
 public class Main {
     public static void main(String[] args) {

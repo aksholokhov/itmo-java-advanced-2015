@@ -4,34 +4,53 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Created by Шолохов on 18.03.2015.
+ * Class which realizes finding first maximum of the list according to the {@code comparator}
+ * @param <T> type of the {@code list's} elements and the result
  */
+
 public class Min<T> implements threadProcessor<T> {
-    private List<? extends T> work;
+    private List<? extends T> list;
     private Comparator<? super T> comparator;
     private T result;
 
-    Min (List<? extends T> work, Comparator<? super T> comparator) {
-        this.work = work;
+    /**
+     * Public constructor
+     * @param list list of the elements needs to be processed
+     * @param comparator comparator for the {@code list} elements
+     */
+    Min (List<? extends T> list, Comparator<? super T> comparator) {
+        this.list = list;
         this.comparator = comparator;
     }
 
+    /**
+     * Getter for the result
+     * @return {@code result} of the calculation
+     */
     @Override
     public T getCalculatedRes() {
         return result;
     }
 
+    /**
+     * Merges results of other Min-threadProcessor's results to one common result
+     * @param parts list with the partial results
+     * @return final result of the calculation Any-predicate in the initial list
+     */
     @Override
-    public T merge(List<? extends T> work) {
-        threadProcessor<T> threadProcessor = new Min<T>(work, comparator);
+    public T merge(List<? extends T> parts) {
+        threadProcessor<T> threadProcessor = new Min<T>(parts, comparator);
         threadProcessor.run();
         return threadProcessor.getCalculatedRes();
     }
 
+    /**
+     * Runs the task
+     */
     @Override
     public void run() {
-        T min = work.get(0);
-        for (T cur : work) {
+        T min = list.get(0);
+        for (T cur : list) {
             if (comparator.compare(min, cur) > 0) {
                 min = cur;
             }
