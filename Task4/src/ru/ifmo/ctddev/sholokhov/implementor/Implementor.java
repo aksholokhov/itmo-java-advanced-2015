@@ -141,7 +141,7 @@ public class Implementor implements Impler, JarImpler {
     public void implementJar(Class<?> token, File jarFile) throws ImplerException {
         boolean prevGenerateJar = generateJar;
         generateJar = true;
-        implement(token, jarFile.getParentFile());
+        implement(token, jarFile);
         generateJar = prevGenerateJar;
     }
 
