@@ -11,7 +11,7 @@ public class Main {
     public static void main (String[] args) {
         Implementor i = new Implementor();
         try {
-            i.implementJar(javax.xml.bind.Element.class, new File(".", "test02_azaza"));
+            i.implementJar(javax.xml.bind.Element.class, new File(".", "test02_azaza.jar"));
         } catch (Exception e) {
         }
 

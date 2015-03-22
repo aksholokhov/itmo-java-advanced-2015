@@ -4,7 +4,6 @@ import info.kgeorgiy.java.advanced.implementor.Impler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 import info.kgeorgiy.java.advanced.implementor.JarImpler;
 
-import javax.management.modelmbean.ModelMBean;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.*;
@@ -22,7 +21,6 @@ import java.util.jar.Manifest;
 public class Implementor implements Impler, JarImpler {
     @Override
     public void implement(Class<?> token, File root) throws ImplerException {
-
 
         if (token.isPrimitive()) {
             throw new ImplerException("Class is primitive");
@@ -102,10 +100,9 @@ public class Implementor implements Impler, JarImpler {
                     out.write('\n' + "}" + '\n' + '\n');
                     out.flush();
 
-                    BufferedWriter buffOut = new BufferedWriter(out);
                     if (generateJar) {
                         compileFile(root, outputFile);
-                        createJar(root, token);
+                        createJar(root , token);
                     }
 
                     out.close();
@@ -115,7 +112,8 @@ public class Implementor implements Impler, JarImpler {
 
             }
         } catch (Exception e) {
-            System.out.println("Exception");
+            System.out.println("HELLO MESSAGE");
+            e.printStackTrace();
         }
     }
 
@@ -143,7 +141,7 @@ public class Implementor implements Impler, JarImpler {
     public void implementJar(Class<?> token, File jarFile) throws ImplerException {
         boolean prevGenerateJar = generateJar;
         generateJar = true;
-        implement(token, jarFile);
+        implement(token, jarFile.getParentFile());
         generateJar = prevGenerateJar;
     }
 
@@ -161,11 +159,10 @@ public class Implementor implements Impler, JarImpler {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         List<String> args = new ArrayList<>();
         args.add("-cp");
-        args.add(root.getPath() + File.pathSeparator + System.getProperty("java.class.path "));
-
+        args.add(root.getPath() + File.pathSeparator + System.getProperty("java.class.path"));
         args.add(source.getPath());
 
-        //ystem.out.println(root.getPath() + File.pathSeparator + System.getProperty("java.class.path "));
+        //System.out.println(root.getPath() + File.pathSeparator + System.getProperty("java.class.path "));
 
         int exitCode = compiler.run(null, null, null, args.toArray(new String[args.size()]));
         if (exitCode != 0) {
@@ -176,19 +173,15 @@ public class Implementor implements Impler, JarImpler {
     /**
      * Creates jar in <tt>classFile</tt> for class <tt>clazz</tt> in <tt>root</tt> directory.
      *
-     * @param root root directory.
      * @param clazz type token to create jar for.
      * @throws ImplerException when {@link java.io.IOException} it occurs in {@link #addToJar(File, JarOutputStream)}.
      */
     private void createJar(File root, Class<?> clazz) throws ImplerException {
         Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        //manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, clazz.getCanonicalName() + "Impl");
 
-        File jarFile = new File(root, clazz.getSimpleName() + "Impl.jar");
         File pathToClasses = new File(clazz.getPackage().getName().split("\\.")[0]);
-
-        System.out.println(clazz.getPackage().getName());
+        File jarFile = new File(root, clazz.getSimpleName() + "Impl.jar");
 
         try (JarOutputStream stream = new JarOutputStream(new FileOutputStream(jarFile), manifest)) {
             addToJar(pathToClasses, stream);
@@ -205,6 +198,7 @@ public class Implementor implements Impler, JarImpler {
      * @throws IOException if it is thrown while reading <tt>file</tt>.
      */
     private void addToJar(File file, JarOutputStream stream) throws IOException {
+
         if (file.isDirectory()) {
      /*       System.out.println(file.getPath());
             JarEntry entry = new JarEntry(file.getPath());
@@ -215,8 +209,7 @@ public class Implementor implements Impler, JarImpler {
                 addToJar(nestedFile, stream);
             }
         } else if (file.getName().endsWith(".class")) {
-     //       System.out.println(file.getPath().substring(file.getPath().indexOf('\\') + 1));
-
+            System.out.println(file.getPath());
             JarEntry entry = new JarEntry(file.getPath());
             stream.putNextEntry(entry);
 
