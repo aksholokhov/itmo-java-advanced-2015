@@ -22,6 +22,8 @@ import java.util.jar.Manifest;
 public class Implementor implements Impler, JarImpler {
     @Override
     public void implement(Class<?> token, File root) throws ImplerException {
+
+
         if (token.isPrimitive()) {
             throw new ImplerException("Class is primitive");
         }
@@ -184,7 +186,7 @@ public class Implementor implements Impler, JarImpler {
         //manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, clazz.getCanonicalName() + "Impl");
 
         File jarFile = new File(root, clazz.getSimpleName() + "Impl.jar");
-        File pathToClasses = new File(root, clazz.getPackage().getName().split("\\.")[0]);
+        File pathToClasses = new File(clazz.getPackage().getName().split("\\.")[0]);
 
         System.out.println(clazz.getPackage().getName());
 
@@ -213,9 +215,9 @@ public class Implementor implements Impler, JarImpler {
                 addToJar(nestedFile, stream);
             }
         } else if (file.getName().endsWith(".class")) {
-            System.out.println(file.getPath().substring(file.getPath().indexOf('\\') + 1));
+     //       System.out.println(file.getPath().substring(file.getPath().indexOf('\\') + 1));
 
-            JarEntry entry = new JarEntry(file.getPath().substring(file.getPath().indexOf('\\') + 1));
+            JarEntry entry = new JarEntry(file.getPath());
             stream.putNextEntry(entry);
 
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
