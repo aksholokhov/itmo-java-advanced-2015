@@ -175,11 +175,11 @@
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/Work.java" />
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/LazyProcessor.java" />
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/PublicCounter.java" />
-        <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/Map.java" />
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/ParallelMapperImpl.java" />
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/ParallelMapper.java" />
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/IterativeParallelism.java" />
         <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/Processor.java" />
+        <option value="$PROJECT_DIR$/src/ru/ifmo/ctddev/sholokhov/iterativeparallelism/Map.java" />
       </list>
     </option>
   </component>
@@ -562,7 +562,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="54" y="-8" width="1320" height="784" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
