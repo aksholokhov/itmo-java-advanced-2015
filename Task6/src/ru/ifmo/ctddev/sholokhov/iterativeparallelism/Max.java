@@ -7,7 +7,7 @@ import java.util.List;
  * Class which realizes finding first maximum of the list according to the {@code comparator}
  * @param <T> type of the {@code list's} elements and the result
  */
-public class Max<T> implements threadProcessor<T> {
+public class Max<T> implements Processor<T> {
     private List<? extends T> list;
     private Comparator<? super T> comparator;
     private T result;
@@ -39,9 +39,9 @@ public class Max<T> implements threadProcessor<T> {
      */
     @Override
     public T merge(List<? extends T> parts) {
-        threadProcessor<T> threadProcessor = new Max<T>(parts, comparator);
-        threadProcessor.run();
-        return threadProcessor.getCalculatedRes();
+        Processor<T> Processor = new Max<T>(parts, comparator);
+        Processor.run();
+        return Processor.getCalculatedRes();
     }
 
     /**

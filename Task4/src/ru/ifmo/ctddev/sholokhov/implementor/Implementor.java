@@ -16,9 +16,18 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 /**
- * Created by Шолохов on 03.03.2015.
+ * Class for implementing other classes and creating JAR files with this flasses
+ * @author Alexey Sholokhov
+ * @see info.kgeorgiy.java.advanced.implementor.Impler
+ * @see info.kgeorgiy.java.advanced.implementor.JarImpler
  */
 public class Implementor implements Impler, JarImpler {
+    /**
+     * Function that implements other Interfaces
+     * @param token type token to create implementation for.
+     * @param root root directory.
+     * @throws ImplerException
+     */
     @Override
     public void implement(Class<?> token, File root) throws ImplerException {
 

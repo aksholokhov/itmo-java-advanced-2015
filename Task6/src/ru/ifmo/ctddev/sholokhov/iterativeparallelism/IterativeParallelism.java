@@ -17,6 +17,12 @@ import java.util.stream.Collectors;
  */
 public class IterativeParallelism implements ScalarIP {
 
+    ParallelMapper parallelMapper;
+
+    IterativeParallelism(ParallelMapper parallelMapper) {
+        this.parallelMapper = parallelMapper;
+    }
+
     /**
      * Finds maximal element of the given list according to the given comparator
      *
@@ -25,7 +31,7 @@ public class IterativeParallelism implements ScalarIP {
      * @param comparator comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return the maximum in the {@code values} according to the {@code comparator}
-     * @throws InterruptedException
+     * @throws InterruptedException throws if process interrupted unexpectedly
      */
     @Override
     public <T> T maximum(int threads, List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
@@ -40,7 +46,7 @@ public class IterativeParallelism implements ScalarIP {
      * @param comparator comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return the minimum in the {@code values} according to the {@code comparator}
-     * @throws InterruptedException
+     * @throws InterruptedException throws if process interrupted unexpectedly
      */
     @Override
     public <T> T minimum(int threads, List<? extends T> values, Comparator<? super T> comparator) throws InterruptedException {
@@ -48,14 +54,14 @@ public class IterativeParallelism implements ScalarIP {
     }
 
     /**
-     * Determines whether all elements of the {@code list} satisfy {@predicate} or not
+     * Determines whether all elements of the {@code list} satisfy {@code predicate} or not
      *
      * @param threads quantity of threads
      * @param values list with data for processing
      * @param predicate comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return true if all elements satisfy predicate, false otherwise
-     * @throws InterruptedException
+     * @throws InterruptedException throws if process interrupted unexpectedly
      */
 
     @Override
@@ -65,14 +71,14 @@ public class IterativeParallelism implements ScalarIP {
 
 
     /**
-     * Determines whether at least one element of the {@code list} satisfies {@predicate} or not
+     * Determines whether at least one element of the {@code list} satisfies {@code predicate} or not
      *
      * @param threads quantity of threads
      * @param values list with data for processing
      * @param predicate comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return true if all elements satisfy predicate, false otherwise
-     * @throws InterruptedException
+     * @throws InterruptedException throws if process interrupted unexpectedly
      */
     @Override
     public <T> boolean any(int threads, List<? extends T> values, Predicate<? super T> predicate) throws InterruptedException {
@@ -80,31 +86,38 @@ public class IterativeParallelism implements ScalarIP {
 
     }
 
-    private <T, P> P runInThreads(int parts, List<? extends T> values, Function<List<? extends T>, threadProcessor<P>> work) {
+    private <T, P> P runInThreads(int parts, List<? extends T> values, Function<List<? extends T>, Processor<P>> work) {
 
         //Splitting job and creating workers
-        List<threadProcessor<P>> threadProcessors = splitJob(parts, values).stream().map(work).collect(Collectors.toList());
+        List<Processor<P>> Processors = splitJob(parts, values).stream().map(work).collect(Collectors.toList());
+        List<P> results;
 
-        //run all workers and waiting for finishing all of them
-        List<Thread> threadsList = new ArrayList<>();
-        for (threadProcessor<P> threadProcessor : threadProcessors) {
-            Thread thread = new Thread(threadProcessor);
-            threadsList.add(thread);
-            thread.start();
-        }
-        try {
-            for (Thread thread : threadsList) {
-                thread.join();
+        if (parallelMapper == null) {
+            results = parallelMapper.map(Processor::getCalculatedRes(), Processors);
+        } else {
+            //map all workers and waiting for finishing all of them
+            List<Thread> threadsList = new ArrayList<>();
+            for (Processor<P> Processor : Processors) {
+                Thread thread = new Thread(Processor);
+                threadsList.add(thread);
+                thread.start();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                for (Thread thread : threadsList) {
+                    thread.join();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //Collect results of all processors to one list
+            results = Processors.stream().map(Processor::getCalculatedRes).collect(Collectors.toList());
+
         }
 
-        //Collect results of all processors to one list
-        List<P> results = threadProcessors.stream().map(threadProcessor::getCalculatedRes).collect(Collectors.toList());
 
         //Get any processor and merge results
-        P result = threadProcessors.get(0).merge(results);
+        P result = Processors.get(0).merge(results);
         return result;
     }
 
@@ -112,7 +125,6 @@ public class IterativeParallelism implements ScalarIP {
         //calculates how many list elements should be processed by one processor
         int amount = values.size();
         int workPerProcessor = Math.max(amount/parts, 1);
-     //   System.out.println(parts + " " + amount + " " + workPerProcessor);
         //creates list of the task per processoe
         List<List<? extends T>> splittedWork = new ArrayList<>();
           for (int l = 0; l < amount; l+=workPerProcessor) {

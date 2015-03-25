@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  * Class which realizes determination whether at least one element of the {@code list} satisfies {@code predicate} or not
  * @param <T> type of the {@code list} elements and returned value
  */
-public class Any<T> implements threadProcessor<Boolean> {
+public class Any<T> implements Processor<Boolean> {
     private List<? extends T> list;
     private Predicate<? super T> predicate;
     private boolean result;
@@ -53,8 +53,8 @@ public class Any<T> implements threadProcessor<Boolean> {
      */
     @Override
     public Boolean merge(List<? extends Boolean> parts) {
-        threadProcessor<Boolean> threadProcessor = new Any<>(parts, Predicate.isEqual(true));
-        threadProcessor.run();
-        return threadProcessor.getCalculatedRes();
+        Processor<Boolean> Processor = new Any<>(parts, Predicate.isEqual(true));
+        Processor.run();
+        return Processor.getCalculatedRes();
     }
 }

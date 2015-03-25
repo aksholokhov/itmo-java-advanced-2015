@@ -8,7 +8,7 @@ import java.util.List;
  * @param <T> type of the {@code list's} elements and the result
  */
 
-public class Min<T> implements threadProcessor<T> {
+public class Min<T> implements Processor<T> {
     private List<? extends T> list;
     private Comparator<? super T> comparator;
     private T result;
@@ -39,9 +39,9 @@ public class Min<T> implements threadProcessor<T> {
      */
     @Override
     public T merge(List<? extends T> parts) {
-        threadProcessor<T> threadProcessor = new Min<T>(parts, comparator);
-        threadProcessor.run();
-        return threadProcessor.getCalculatedRes();
+        Processor<T> Processor = new Min<T>(parts, comparator);
+        Processor.run();
+        return Processor.getCalculatedRes();
     }
 
     /**
