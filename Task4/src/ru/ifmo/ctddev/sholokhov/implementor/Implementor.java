@@ -16,9 +16,17 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 /**
- * Created by Шолохов on 03.03.2015.
+ * @author Alexey Sholokhov on 03.03.2015.
  */
 public class Implementor implements Impler, JarImpler {
+	/**
+	 * Function that implements given class with empty 
+	 * 
+	 * @param token class that we will implement
+	 * @param root directory where file will be created
+	 * 
+	 * */
+	
     @Override
     public void implement(Class<?> token, File root) throws ImplerException {
 
@@ -174,6 +182,7 @@ public class Implementor implements Impler, JarImpler {
      * Creates jar in <tt>classFile</tt> for class <tt>clazz</tt> in <tt>root</tt> directory.
      *
      * @param clazz type token to create jar for.
+     * @param root output file
      * @throws ImplerException when {@link java.io.IOException} it occurs in {@link #addToJar(File, JarOutputStream)}.
      */
     private void createJar(File root, Class<?> clazz) throws ImplerException {
