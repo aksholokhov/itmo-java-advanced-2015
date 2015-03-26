@@ -1,0 +1,13 @@
+*.swp
+
+*.class
+
+*.iml
+
+*.txt
+
+.idea/
+
+bin/
+
+docs/

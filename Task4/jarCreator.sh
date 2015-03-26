@@ -1,0 +1,2 @@
+#!/bin/sh
+jar cfm out/artifacts/Task4_jar/Task4.jar Manifest.mf -C out/production/Task4/ ru/ifmo/ctddev/sholokhov/implementor/Implementor.class -C out/production/Task4/ info/kgeorgiy/java/advanced/implementor/Impler.class -C out/production/Task4/ info/kgeorgiy/java/advanced/implementor/ImplerException.class -C out/production/Task4/ info/kgeorgiy/java/advanced/implementor/JarImpler.class
