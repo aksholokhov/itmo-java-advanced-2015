@@ -1,9 +1,6 @@
 package ru.ifmo.ctddev.sholokhov.iterativeparallelism;
 
 /**
- * Created by Шолохов on 01.04.2015.
- */
-/**
  * AtomicInteger-like counter
  * @see java.util.concurrent.atomic.AtomicInteger
  */

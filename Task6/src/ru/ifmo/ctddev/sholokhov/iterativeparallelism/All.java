@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  * Class which realizes determination whether all elements of the {@code list} satisfy {@code predicate} or not
  * @param <T> type of the {@code list} elements and returned value
  */
-public class All<T> implements Processor<Boolean> {
+public class All<T> extends LazyProcessor<Boolean> {
     private List<? extends T> list;
     private Predicate<? super T> predicate;
     private boolean result;
@@ -24,40 +24,24 @@ public class All<T> implements Processor<Boolean> {
         this.predicate = predicate;
     }
 
-
     /**
-     * Runs the task
-     */
-
-    @Override
-    public void run() {
-        result = true;
-        for (T elem : list) {
-            if (!predicate.test(elem)) {
-                result = false;
-                break;
-            }
-        }
-    }
-
-    /**
-     * Getter for the result
+     * Calculated result
      * @return {@code result} of the calculation
      */
     @Override
-    public Boolean getCalculatedRes() {
-        return result;
+    public Boolean calcResult() {
+        return list.stream()
+                .reduce(true, (a, b) -> a && predicate.test(b), Boolean::logicalAnd);
     }
 
     /**
-     * Merges results of other All-threadProcessor's results to one common result
+     * Merges results of other All-threadProcessors to one common result
      * @param parts list with the partial results
      * @return final result of the calculation Any-predicate in the initial list
      */
     @Override
-    public Boolean merge(List<? extends Boolean> parts) {
-        Processor<Boolean> Processor = new All<>(parts, Predicate.isEqual(true));
-        Processor.run();
-        return Processor.getCalculatedRes();
+    public Boolean merge(List<Boolean> parts) {
+        return parts.stream()
+                .reduce(true, Boolean::logicalAnd);
     }
 }

@@ -7,54 +7,37 @@ import java.util.function.Predicate;
  * Class which realizes determination whether at least one element of the {@code list} satisfies {@code predicate} or not
  * @param <T> type of the {@code list} elements and returned value
  */
-public class Any<T> implements Processor<Boolean> {
-    private List<? extends T> list;
-    private Predicate<? super T> predicate;
-    private boolean result;
+public class Any<T> extends LazyProcessor<Boolean> {
+    private All<T> allWorker;
 
     /**
      * Public constructor
      * @param list list of the elements needs to be processed
      * @param predicate predicate for the {@code list} elements
-     */
+     * */
 
     public Any(List<? extends T> list, Predicate<? super T> predicate) {
-        this.list = list;
-        this.predicate = predicate;
+        super();
+        allWorker = new All<>(list, predicate.negate());
     }
 
     /**
-     * Runs the task
-     */
-    @Override
-    public void run() {
-        result = false;
-        for (T elem : list) {
-            if (predicate.test(elem)) {
-                result = true;
-                break;
-            }
-        }
-    }
-
-    /**
-     * Getter for the result
+     * Calculated result
      * @return {@code result} of the calculation
      */
     @Override
-    public Boolean getCalculatedRes() {
-        return result;
+    public Boolean calcResult() {
+        return !allWorker.getResult();
     }
 
     /**
-     * Merges results of other Any-threadProcessor's results to one common result
-     * @param parts list with the partial results
+     * Merges results of other All-threadProcessors to one common result
+     * @param results list with the partial results
      * @return final result of the calculation Any-predicate in the initial list
      */
     @Override
-    public Boolean merge(List<? extends Boolean> parts) {
-        Processor<Boolean> Processor = new Any<>(parts, Predicate.isEqual(true));
-        Processor.run();
-        return Processor.getCalculatedRes();
+    public Boolean merge(List<Boolean> results) {
+        return results.stream()
+                .reduce(false, Boolean::logicalOr);
     }
 }

@@ -1,19 +1,16 @@
 package ru.ifmo.ctddev.sholokhov.iterativeparallelism;
 
-/**
- * Created by Шолохов on 01.04.2015.
- */
-        import java.util.ArrayList;
-        import java.util.LinkedList;
-        import java.util.List;
-        import java.util.Queue;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Thread pool with fixed amount of workers.
  */
 public class FixedThreadPool {
     private final Queue<Runnable> pool;
-    private final List<Thread> workerThreads;
+    private final List<Thread> processorThreads;
 
     /**
      * Creates fixed thread pool
@@ -21,11 +18,11 @@ public class FixedThreadPool {
      */
     public FixedThreadPool(int threads) {
         pool = new LinkedList<>();
-        workerThreads = new ArrayList<>();
+        processorThreads = new ArrayList<>();
 
         for (int i = 0; i < threads; i++) {
             Thread thread = new ProcessorThread(pool);
-            workerThreads.add(thread);
+            processorThreads.add(thread);
             thread.start();
         }
     }
@@ -49,7 +46,7 @@ public class FixedThreadPool {
             pool.clear();
         }
 
-        workerThreads.forEach(java.lang.Thread::interrupt);
+        processorThreads.forEach(java.lang.Thread::interrupt);
 
     }
 }

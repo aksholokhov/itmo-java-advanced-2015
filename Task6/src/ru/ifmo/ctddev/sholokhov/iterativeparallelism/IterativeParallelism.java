@@ -36,7 +36,7 @@ public class IterativeParallelism implements ScalarIP {
      * @param comparator comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return the maximum in the {@code values} according to the {@code comparator}
-     * @throws InterruptedException
+     * @throws InterruptedException appears when thread are interrupted
      */
     @Override
     public <T> T maximum(int threads, List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
@@ -51,7 +51,7 @@ public class IterativeParallelism implements ScalarIP {
      * @param comparator comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return the minimum in the {@code values} according to the {@code comparator}
-     * @throws InterruptedException
+     * @throws InterruptedException appears when thread are interrupted
      */
     @Override
     public <T> T minimum(int threads, List<? extends T> values, Comparator<? super T> comparator) throws InterruptedException {
@@ -59,14 +59,14 @@ public class IterativeParallelism implements ScalarIP {
     }
 
     /**
-     * Determines whether all elements of the {@code list} satisfy {@predicate} or not
+     * Determines whether all elements of the {@code list} satisfy {@code predicate} or not
      *
      * @param threads quantity of threads
      * @param values list with data for processing
      * @param predicate comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return true if all elements satisfy predicate, false otherwise
-     * @throws InterruptedException
+     * @throws InterruptedException appears when thread are interrupted
      */
 
     @Override
@@ -76,14 +76,14 @@ public class IterativeParallelism implements ScalarIP {
 
 
     /**
-     * Determines whether at least one element of the {@code list} satisfies {@predicate} or not
+     * Determines whether at least one element of the {@code list} satisfies {@code predicate} or not
      *
      * @param threads quantity of threads
      * @param values list with data for processing
      * @param predicate comparator for comparing {@code values} elements
      * @param <T> result type, should be the same with the {@code values} elements type
      * @return true if all elements satisfy predicate, false otherwise
-     * @throws InterruptedException
+     * @throws InterruptedException appears when thread are interrupted
      */
     @Override
     public <T> boolean any(int threads, List<? extends T> values, Predicate<? super T> predicate) throws InterruptedException {
@@ -91,14 +91,29 @@ public class IterativeParallelism implements ScalarIP {
 
     }
 
+    /**
+     * Runs in {@code parts} threads {@code work} on the list of {@code values}
+     *
+     * @param parts number of threads to execute
+     * @param values list fo values are being processed
+     * @param work one of the processors which executes on the list
+     * @param <T> type of the input data
+     * @param <P> type of the output data
+     * @return result of the function applying
+     * @throws InterruptedException appears when thread are interrupted
+     */
+
     private <T, P> P runInThreads(int parts, List<? extends T> values, Function<List<? extends T>, Processor<P>> work) throws InterruptedException{
 
-        //Splitting job and creating workers
+
+        parts = Math.min(parts, values.size());
+        //Split job and create workers
         List<Processor<P>> processors = splitJob(parts, values).stream().map(work).collect(Collectors.toList());
         List<P> results;
 
+        //Decide whether we use ThreadPool (according to the task, or not)
         if (mapper != null) {
-            results = mapper.map(Processor::getCalculatedRes, processors);
+            results = mapper.map(Processor::getResult, processors);
         } else {
             //run all workers and waiting for finishing all of them
             List<Thread> threadsList = new ArrayList<>();
@@ -116,7 +131,7 @@ public class IterativeParallelism implements ScalarIP {
             }
 
             //Collect results of all processors to one list
-            results = processors.stream().map(Processor::getCalculatedRes).collect(Collectors.toList());
+            results = processors.stream().map(Processor::getResult).collect(Collectors.toList());
 
         }
 

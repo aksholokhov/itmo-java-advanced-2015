@@ -8,11 +8,15 @@ import java.util.List;
  */
 
 public interface Processor<T> extends Runnable{
+    default void run() {
+        getResult();
+    }
+
     /**
      * Getter for the result of the task's calculation
      * @return the result of the given task
      */
-    T getCalculatedRes();
+    T getResult();
 
     /**
      * Additional function for merging results of the other threadProcessors
@@ -20,5 +24,5 @@ public interface Processor<T> extends Runnable{
      * @param parts list with the partial results
      * @return general result for the initial list
      */
-    T merge(List<? extends T> parts);
+    T merge(List<T> parts);
 }

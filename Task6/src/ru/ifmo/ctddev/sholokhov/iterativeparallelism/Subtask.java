@@ -1,10 +1,8 @@
 package ru.ifmo.ctddev.sholokhov.iterativeparallelism;
 
+
 /**
- * Created by Шолохов on 01.04.2015.
- */
-/**
- * Worker wrapper that increments counter after the wrapped job's done.
+ * Processor wrapper that increments counter after the wrapped job's done.
  */
 public class Subtask implements Runnable {
     private Counter counter;
