@@ -47,7 +47,7 @@ public class Implementor implements Impler, JarImpler {
 
                 File outputFile = new File(root, token.getCanonicalName().replace(".", File.separator) + "Impl.java");
                 File manifest = new File(root, "META-INF/MANIFEST.MF");
-                
+                System.out.println("File: " + outputFile.getAbsolutePath());
                 manifest.getParentFile().mkdirs();
                 outputFile.getParentFile().mkdirs();
 
