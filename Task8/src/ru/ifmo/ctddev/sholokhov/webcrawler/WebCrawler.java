@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebCrawler implements Crawler {
     Downloader downloader;
@@ -15,8 +18,8 @@ public class WebCrawler implements Crawler {
     int extractors;
     int perHost;
 
-    FixedThreadPool downloadPool;
-    FixedThreadPool extractPool;
+    ExecutorService downloadPool;
+    ExecutorService extractPool;
 
     WebCrawler (Downloader downloader, int downloaders, int extractors, int perHost) {
         this.downloader = downloader;
@@ -24,8 +27,8 @@ public class WebCrawler implements Crawler {
         this.extractors = extractors;
         this.perHost = perHost;
 
-        downloadPool = new FixedThreadPool(downloaders);
-        extractPool = new FixedThreadPool(extractors);
+        downloadPool = Executors.newFixedThreadPool(downloaders);
+        extractPool = Executors.newFixedThreadPool(extractors);
     }
 
 
@@ -34,38 +37,47 @@ public class WebCrawler implements Crawler {
         if (depth == 1) {
             return Arrays.asList(url);
         } else {
-            FinishTrigger trigger = new FinishTrigger(1);
-            Document doc = downloader.download(url);
-            List<String> answer = new ArrayList<>();
-
-            downloadPool.execute(new ThrowedRunnable() {
+            List<String> links = new ArrayList<>();
+            AtomicInteger v = new AtomicInteger(1);
+            downloadPool.execute(new Runnable() {
                 @Override
-                public void run() throws Throwable{
-                    answer.add(url);
-                    extractPool.execute(new Subtask(trigger, new ThrowedRunnable() {
-                        @Override
-                        public void run() throws Throwable {
-                          // doc.extractLinks().stream().forEach(link -> answer.addAll(download(link, depth - 1)));
-                            List<String> links = doc.extractLinks();
-                            for(String link : links) {
-                                answer.addAll(download(link, depth -1));
+                public void run() {
+                    try {
+                        Document document = downloader.download(url);
+                        extractPool.execute(new Subtask(v) {
+                            @Override
+                            public void run() {
+                                links.add(url);
+                                try {
+                                    for (String link : document.extractLinks()) {
+                                        links.addAll(download(link, depth - 1));
+                                    }
+                                } catch (IOException e) {
+                         //           e.printStackTrace();
+                                }
+                                finally {
+                                    v.set(0);
+                                }
+
                             }
-                        }
-                    }));
-
-
+                        });
+                    } catch (IOException e) {
+                       // e.printStackTrace();
+                        v.set(0);
+                    }
                 }
+
             });
-            do {
+            while (!v.compareAndSet(0, 1));
 
-            } while (trigger.)
+            return links;
         }
-
 
     }
 
     @Override
     public void close() {
-
+        downloadPool.shutdown();
+        extractPool.shutdown();
     }
 }
