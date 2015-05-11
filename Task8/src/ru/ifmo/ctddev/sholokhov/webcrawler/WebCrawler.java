@@ -5,9 +5,7 @@ import info.kgeorgiy.java.advanced.crawler.Document;
 import info.kgeorgiy.java.advanced.crawler.Downloader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,7 +19,7 @@ public class WebCrawler implements Crawler {
     ExecutorService downloadPool;
     ExecutorService extractPool;
 
-    WebCrawler (Downloader downloader, int downloaders, int extractors, int perHost) {
+    public WebCrawler(Downloader downloader, int downloaders, int extractors, int perHost) {
         this.downloader = downloader;
         this.downloaders = downloaders;
         this.extractors = extractors;
@@ -37,7 +35,7 @@ public class WebCrawler implements Crawler {
         if (depth == 1) {
             return Arrays.asList(url);
         } else {
-            List<String> links = new ArrayList<>();
+            Set<String> links = new TreeSet<>();
             AtomicInteger v = new AtomicInteger(1);
             downloadPool.execute(new Runnable() {
                 @Override
@@ -70,7 +68,7 @@ public class WebCrawler implements Crawler {
             });
             while (!v.compareAndSet(0, 1));
 
-            return links;
+            return new ArrayList(links);
         }
 
     }
