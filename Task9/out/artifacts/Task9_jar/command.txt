@@ -1,0 +1,1 @@
+java -cp "lib/*;HelloUDPTest.jar;Task9.jar" info.kgeorgiy.java.advanced.hello.Tester client ru.ifmo.ctddev.sholokhov.hello.HelloUDPClient
