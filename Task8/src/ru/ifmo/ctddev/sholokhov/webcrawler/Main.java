@@ -2,11 +2,13 @@ package ru.ifmo.ctddev.sholokhov.webcrawler;
 
 import info.kgeorgiy.java.advanced.crawler.CachingDownloader;
 import info.kgeorgiy.java.advanced.crawler.Crawler;
+import info.kgeorgiy.java.advanced.crawler.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class Main {
             int perHost = 1;
             int depth = 3;
 
-            if (args.length >= 2) {
+/*            if (args.length >= 2) {
                 downloads = Integer.parseInt(args[1]);
             }
             if (args.length >= 3) {
@@ -29,14 +31,21 @@ public class Main {
             if (args.length < 2 || args.length > 4) {
                 throw new NullPointerException();
             }
-
+*/
             try (Crawler crawler = new WebCrawler(new CachingDownloader(), downloads, extractors, perHost)) {
-                List<String> urls = crawler.download(url, depth);
-                List<String> uniqueUrls = new ArrayList<>(new HashSet<>(urls));
-                System.out.printf("%d %d\n", urls.size(), uniqueUrls.size());
-                for (String link : urls) {
+                System.out.println("Downloaded:");
+                Result r = crawler.download(url, depth);
+                for (String link : r.getDownloaded()) {
                     System.out.println("-> " + link);
                 }
+
+                if (!r.getErrors().isEmpty()) {
+                    System.out.println("ERRORS:");
+                    for (Map.Entry e: r.getErrors().entrySet()) {
+                        System.out.println(e.getKey() + "\n     " + e.getValue());
+                    }
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

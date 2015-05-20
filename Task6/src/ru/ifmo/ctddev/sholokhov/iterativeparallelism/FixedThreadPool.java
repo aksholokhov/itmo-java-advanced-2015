@@ -47,6 +47,5 @@ public class FixedThreadPool {
         }
 
         processorThreads.forEach(java.lang.Thread::interrupt);
-
     }
 }
