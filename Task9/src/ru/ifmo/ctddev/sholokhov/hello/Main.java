@@ -5,7 +5,7 @@ public class Main {
         HelloUDPClient client = new HelloUDPClient();
         HelloUDPServer server = new HelloUDPServer();
 
-        server.start(15700, 8);
-        client.start("localhost", 15700, "prefix", 3, 4);
+        server.start(15750, 8);
+        client.start("localhost", 15750, "ыкевчапавчп", 3, 4);
     }
 }

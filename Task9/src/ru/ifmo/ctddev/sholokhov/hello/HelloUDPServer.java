@@ -10,14 +10,22 @@ import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * My dummy implementation of the HelloServer interface
+ */
+
 public class HelloUDPServer implements HelloServer {
     ExecutorService pool;
 
+    /**
+     * Starts the server binded to the {@code port} and charged with {@code threads}
+     * @param port which the server will bind
+     * @param threads number of threads the server operate with
+     */
     @Override
     public void start(int port, int threads) {
         pool = Executors.newFixedThreadPool(threads);
         final DatagramSocket socket;
-        final String prefix = "prefix";
 
         try {
             socket = new DatagramSocket(port);
@@ -31,19 +39,23 @@ public class HelloUDPServer implements HelloServer {
                 @Override
                 public void run() {
                     while (true) {
-                        byte[] buf = new byte[256];
-                        DatagramPacket p = new DatagramPacket(buf, buf.length);
+                        byte[] buf;
+                        DatagramPacket p;
                         try {
+                            buf = new byte[socket.getReceiveBufferSize()];
+                            p = new DatagramPacket(buf, buf.length);
                             socket.receive(p);
+                    //        System.out.println("fff " + p.getLength());
                         } catch (IOException e) {
                             System.out.println("Exception during receiving");
                             return;
                         }
 
-                        byte[] response = ("Hello, " + new String(buf, 0, p.getLength())).getBytes(Charset.forName("utf-8"));
-                       // System.out.println(">" + new String(response) + "<");
+                        byte[] response = ("Hello, " + new String(p.getData(), 0, p.getLength())).getBytes(Charset.forName("utf-8"));
+                        //System.out.println("gggg " + new String(response, 0, response.length) + " " + response.length);
                         try {
                             socket.send(new DatagramPacket(response, response.length, p.getAddress(), p.getPort()));
+
                         } catch (IOException e) {
                             System.out.println("Exception during sending");
                         }
