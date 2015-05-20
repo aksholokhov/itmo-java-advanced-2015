@@ -9,7 +9,7 @@ import java.util.List;
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 public interface Crawler extends AutoCloseable {
-    List<String> download(String url, int depth) throws IOException;
+    Result download(String url, int depth) throws IOException;
 
     void close();
 }

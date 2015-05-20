@@ -3,7 +3,7 @@ package info.kgeorgiy.java.advanced.crawler;
 import java.io.IOException;
 
 /**
- * Downloads {@link Document documents}.
+ * Downloads {@link info.kgeorgiy.java.advanced.crawler.Document documents}.
  *
  * @see CachingDownloader
  *
@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public interface Downloader {
     /**
-     * Downloads {@link Document} by
+     * Downloads {@link info.kgeorgiy.java.advanced.crawler.Document} by
      * <a href="http://tools.ietf.org/html/rfc3986">URL</a>.
      *
      * @param url URL to download.
