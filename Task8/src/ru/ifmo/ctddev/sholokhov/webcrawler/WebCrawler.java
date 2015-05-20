@@ -9,98 +9,84 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebCrawler implements Crawler {
     private final Downloader downloader;
-    private final ExecutorService downloadPool;
-    private final ExecutorService extractPool;
+    private final FixedThreadPool downloadPool;
+    private final FixedThreadPool extractPool;
     private final Set<String> downloadedPages;
     private final Set<String> extractedPages;
-    public Map<String, List<Runnable>> perHostQueue;
+    private final ConcurrentHashMap<String, IOException> exceptionPages;
 
     public WebCrawler(Downloader downloader, int downloaders, int extractors, int perHost) {
         this.downloader = downloader;
-        this.downloadPool = Executors.newFixedThreadPool(downloaders);
-        this.extractPool = Executors.newFixedThreadPool(extractors);
+        this.downloadPool = new FixedThreadPool(downloaders);
+        this.extractPool = new FixedThreadPool(extractors);
         this.downloadedPages = Collections.newSetFromMap(new ConcurrentHashMap<>());
         this.extractedPages = Collections.newSetFromMap(new ConcurrentHashMap<>());
-        this.perHostQueue = new TreeMap<>();
+        this.exceptionPages = new ConcurrentHashMap<>();
     }
 
     @Override
     public Result download(String url, int depth) throws IOException {
+       // System.out.println("depth = " + depth);
         if (depth == 1) {
             return new Result(Arrays.asList(url), new HashMap<>());
         } else {
-            Set<String> links = new TreeSet<>();
-            HashMap<String, IOException> errs = new HashMap<>();
-            AtomicInteger v = new AtomicInteger(1);
-            Runnable task1 = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Document document;
-                        synchronized (downloader) {
-                            document = downloader.download(url);
-                        }
-                        Subtask task =  new Subtask(v) {
-                            @Override
-                            public void run() {
-                                synchronized (links) {
-                                    links.add(url);
-                                }
+            List<String> list = new ArrayList<>();
+            Queue<Pair> queue = new ConcurrentLinkedQueue<>();
+            queue.add(new Pair(url, depth));
+
+            while (!queue.isEmpty()) {
+                Pair task = queue.poll();
+                System.out.println(queue.size());
+                if (task.depth == 1) {
+                    list.add(task.URL);
+                }
+                else if (!downloadedPages.contains(task.URL)){
+                    downloadedPages.add(task.URL);
+                    AtomicInteger v = new AtomicInteger(1);
+                    downloadPool.execute( () -> {
+                        try {
+                            Document document = downloader.download(task.URL);
+                            extractPool.execute(() -> {
                                 try {
-                                    List<String> extractedLinks;
-                                    synchronized (document) {
-                                        extractedLinks = document.extractLinks();
-                                    }
-                                    for (String link : extractedLinks) {
-                                        try {
-                                            Result res = download(link, depth - 1);
-                                            synchronized (links) {
-                                                links.addAll(res.getDownloaded());
-                                            }
-                                            synchronized (errs) {
-                                                errs.putAll(res.getErrors());
-                                            }
-                                        } catch (IOException e) {
-                                            synchronized (errs) {
-                                                errs.put(link, e);
-                                            }
-                                        } finally {
-                                            v.set(0);
-                                        }
+                                    list.add(task.URL);
+                                    if (!extractedPages.contains(task.URL)) {
+                                        extractedPages.add(task.URL);
+                                        document.extractLinks().forEach(s -> queue.add(new Pair(s, task.depth - 1)));
                                     }
 
                                 } catch (IOException e) {
-                                    //      System.err.println("Error in extract links");
+                                    exceptionPages.put(task.URL, e);
+                                } finally {
+                                    v.set(0);
                                 }
+                            });
 
-                            }
-                        };
-                        synchronized (extractPool){
-                            if (!extractPool.isShutdown()) extractPool.submit(task);
+                        } catch (IOException e) {
+                            exceptionPages.put(task.URL, e);
+                            v.set(0);
                         }
-                    } catch (IOException e) {
-                        synchronized (errs) {
-                            errs.put(url, e);
-                        }
-                        v.set(0);
-                    }
+                    });
+                    while (!v.compareAndSet(0, 1));
                 }
-
-            };
-            synchronized (downloadPool) {
-                if (!downloadPool.isShutdown()) downloadPool.submit(task1);
             }
-            while (!v.compareAndSet(0, 1)) ;
-            return new Result( new ArrayList<>(links), errs);
+            return new Result(list, exceptionPages);
+        }
+    }
+
+
+    private class Pair {
+        String URL;
+        int depth;
+        Pair(String URL, int depth) {
+            this.URL = URL;
+            this.depth = depth;
         }
     }
 
 
     @Override
     public void close() {
-        downloadPool.shutdownNow();
-        extractPool.shutdownNow();
-        while (!downloadPool.isShutdown());
-        while (!extractPool.isShutdown());
+        downloadPool.shutdown();
+        extractPool.shutdown();
     }
 }

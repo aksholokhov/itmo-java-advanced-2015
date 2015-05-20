@@ -13,11 +13,11 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) {
         try {
-            String url = args[0];
-            int downloads = 1;
-            int extractors = 1;
+            String url = "http://en.ifmo.ru/en/page/50/Partnership.htm";
+            int downloads = 10;
+            int extractors = 10;
             int perHost = 1;
-            int depth = 3;
+            int depth = 1;
 
 /*            if (args.length >= 2) {
                 downloads = Integer.parseInt(args[1]);
@@ -45,6 +45,7 @@ public class Main {
                         System.out.println(e.getKey() + "\n     " + e.getValue());
                     }
                 }
+                crawler.close();
 
             } catch (IOException e) {
                 e.printStackTrace();
