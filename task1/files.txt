@@ -1,3 +1,0 @@
-files/13.pdf
-files/26.doc
-files/empty.txt
